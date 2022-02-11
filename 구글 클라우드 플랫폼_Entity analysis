@@ -1,0 +1,32 @@
+Entity analysis
+https://codelabs.developers.google.com/codelabs/cloud-natural-language-python3#7
+
+#구글 플랫폼 파워셸 실행 및 인스톨
+export GOOGLE_APPLICATION_CREDENTIALS=~/key.json
+pip3 freeze | grep google-cloud-language
+
+
+from google.cloud import language
+
+def analyze_text_entities(text):
+    client = language.LanguageServiceClient()
+    document = language.Document(content=text, type_=language.Document.Type.PLAIN_TEXT)
+
+    response = client.analyze_entities(document=document)
+
+    for entity in response.entities:
+        print("=" * 80)
+        results = dict(
+            name=entity.name,
+            type=entity.type_.name,
+            salience=f"{entity.salience:.1%}",
+            wikipedia_url=entity.metadata.get("wikipedia_url", "-"),
+            mid=entity.metadata.get("mid", "-"),
+        )
+        for k, v in results.items():
+            print(f"{k:15}: {v}")
+
+# 텍스트 넣기
+text = "Guido van Rossum is great, and so is Python!"
+analyze_text_entities(text)
+
